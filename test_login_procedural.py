@@ -1,26 +1,36 @@
 from playwright.sync_api import Page
 
-LOGIN_URL = "https://www.saucedemo.com/"
 USERNAME_FIELD = "#user-name"
 PASSWORD_FIELD = "#password"
 LOGIN_BTN = "#login-button"
 ERR_MSG = "[data-test='error']"
 
 
-def test_login_success(page: Page):
-    page.goto(LOGIN_URL)
-    page.locator(USERNAME_FIELD).fill("standard_user")
-    page.locator(PASSWORD_FIELD).fill("secret_sauce")
+def login(page: Page, url: str, username: str, password: str):
+    page.goto(url)
+    page.locator(USERNAME_FIELD).fill(username)
+    page.locator(PASSWORD_FIELD).fill(password)
     page.locator(LOGIN_BTN).click()
+
+
+def test_login_success(page: Page):
+    login(
+        page,
+        "https://www.saucedemo.com/",
+        "standard_user",
+        "secret_sauce",
+    )
 
     assert page.url == "https://www.saucedemo.com/inventory.html"
 
 
 def test_login_failed(page: Page):
-    page.goto(LOGIN_URL)
-    page.locator(USERNAME_FIELD).fill("fufufafa")
-    page.locator(PASSWORD_FIELD).fill("lupa_password")
-    page.locator(LOGIN_BTN).click()
+    login(
+        page,
+        "https://www.saucedemo.com/",
+        "fufufafa",
+        "lupa_password",
+    )
 
     assert (
         page.locator(ERR_MSG).inner_text()
